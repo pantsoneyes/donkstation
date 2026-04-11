@@ -72,13 +72,6 @@
 	. = ..()
 	add_relay_to(GET_NEW_PLANE(RENDER_PLANE_EMISSIVE_BLOOM, offset), blend_override = BLEND_MULTIPLY)
 
-/*
-/atom/movable/screen/plane_master/rendering_plate/uv_light_game_plate
-	name = "UV Light Game rendering plate"
-	documentation = "Feeds the bits of the game plate which want to be affected by uv light masking into RENDER_PLANE_GAME and the emissive bloom pipeline (the reason this exists)."
-	plane = RENDER_PLANE_GAME_UV_LIGHT
-	render_relay_planes = list(RENDER_PLANE_GAME)
-*/
 
 
 /atom/movable/screen/plane_master/rendering_plate/turf_lighting

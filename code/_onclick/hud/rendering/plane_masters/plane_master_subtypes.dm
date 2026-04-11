@@ -240,7 +240,7 @@
 	name = "Game"
 	documentation = "Holds most non floor/wall things. Anything on this plane \"wants\" to interlayer depending on position."
 	plane = GAME_PLANE
-	render_relay_planes = list(UV_LIGHTABLE_GAME_PLANE)
+	render_relay_planes = list(RENDER_PLANE_GAME_WORLD)
 
 /atom/movable/screen/plane_master/uv_lightable_game_plane
 	name = "UV Lightable Objects"
@@ -252,6 +252,7 @@
 /atom/movable/screen/plane_master/uv_lightable_game_plane/Initialize(mapload, datum/hud/hud_owner, datum/plane_master_group/home, offset)
 	. = ..()
 	add_filter("uv_handled_space", 2, alpha_mask_filter(render_source = OFFSET_RENDER_TARGET(UV_LIGHT_MASK_RENDER_TARGET, offset)))
+	add_filter("uv_handled_bloom", 3, bloom_filter(threshold = COLOR_BLACK, size = 2, offset = 0.5))
 
 /atom/movable/screen/plane_master/game_world_above
 	name = "Upper Game"

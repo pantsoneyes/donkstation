@@ -131,8 +131,6 @@
 #define RENDER_PLANE_GAME_MASKED 41
 /// The bit of the game plane that is let alone is sent here
 #define RENDER_PLANE_GAME_UNMASKED 42
-/// Objects that are only visible under UV light
-#define RENDER_PLANE_GAME_UV_LIGHT 43
 
 #define RENDER_PLANE_NON_GAME 45
 

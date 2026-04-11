@@ -88,8 +88,8 @@
 	/// Whether to play a sound after using
 	var/post_noise = FALSE
 
-	/// Whether the paint is visible without a spy light
-	var/visible_without_light = FALSE
+	/// Whether the paint is uv, meaning it's only visible under uv light
+	var/uses_uv_paint = TRUE
 
 	/**
 	 * List of selectable graffiti options
@@ -551,14 +551,14 @@
 		var/obj/effect/decal/cleanable/crayon/created_art
 		switch(paint_mode)
 			if(PAINT_NORMAL)
-				created_art = new(target, paint_color, drawing, temp, graf_rot)
+				created_art = new(target, paint_color, drawing, temp, graf_rot, uses_uv_paint)
 				created_art.pixel_x = clickx
 				created_art.pixel_y = clicky
 			if(PAINT_LARGE_HORIZONTAL)
 				var/turf/left = locate(target.x-1,target.y,target.z)
 				var/turf/right = locate(target.x+1,target.y,target.z)
 				if(isValidSurface(left) && isValidSurface(right))
-					created_art = new(left, paint_color, drawing, temp, graf_rot, PAINT_LARGE_HORIZONTAL_ICON)
+					created_art = new(left, paint_color, drawing, temp, graf_rot, PAINT_LARGE_HORIZONTAL_ICON, uses_uv_paint)
 					affected_turfs += left
 					affected_turfs += right
 				else
@@ -569,9 +569,6 @@
 			created_art.AddElement(/datum/element/art, GOOD_ART)
 		else
 			created_art.AddElement(/datum/element/art, BAD_ART)
-
-		if(!visible_without_light)
-			created_art.plane = UV_LIGHTABLE_GAME_PLANE
 
 	if(!instant)
 		to_chat(user, span_notice("You finish drawing \the [temp]."))
