@@ -8,6 +8,10 @@
 #define FIELD_OF_VISION_BLOCKER_PLANE -45
 #define FIELD_OF_VISION_BLOCKER_RENDER_TARGET "*FIELD_OF_VISION_BLOCKER_RENDER_TARGET"
 
+// Doesn't really layer, just throwing this in here cause it's the best place imo
+#define UV_LIGHT_MASK_PLANE -44
+#define UV_LIGHT_MASK_RENDER_TARGET "*UV_LIGHT_MASK_RENDER_TARGET"
+
 #define CLICKCATCHER_PLANE -40
 
 #define PLANE_SPACE -21
@@ -20,10 +24,13 @@
 
 #define TRANSPARENT_FLOOR_PLANE -10
 
-#define FLOOR_PLANE -6
+#define FLOOR_PLANE -7
 
-#define WALL_PLANE -5
-#define GAME_PLANE -4
+#define WALL_PLANE -6
+#define GAME_PLANE -5
+///Objects on this plane are only visible with UV light.
+#define UV_LIGHTABLE_GAME_PLANE -4
+
 #define ABOVE_GAME_PLANE -3
 ///Slightly above the game plane but does not catch mouse clicks. Useful for certain visuals that should be clicked through, like seethrough trees
 #define SEETHROUGH_PLANE -2
@@ -124,6 +131,8 @@
 #define RENDER_PLANE_GAME_MASKED 41
 /// The bit of the game plane that is let alone is sent here
 #define RENDER_PLANE_GAME_UNMASKED 42
+/// Objects that are only visible under UV light
+#define RENDER_PLANE_GAME_UV_LIGHT 43
 
 #define RENDER_PLANE_NON_GAME 45
 

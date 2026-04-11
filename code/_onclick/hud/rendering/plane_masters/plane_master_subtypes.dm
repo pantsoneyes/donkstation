@@ -33,6 +33,21 @@
 	SIGNAL_HANDLER
 	hide_plane(source)
 
+
+/atom/movable/screen/plane_master/uv_light_mask
+	name = "UV Light Mask"
+	documentation = "This is one of those planes that's only used as a filter. It cuts out a portion of the game plane and does effects to it."
+	plane = UV_LIGHT_MASK_PLANE
+	appearance_flags = PLANE_MASTER|NO_CLIENT_COLOR
+	render_target = UV_LIGHT_MASK_RENDER_TARGET
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	render_relay_planes = list()
+	// We do NOT allow offsetting, because there's no case where you would want to block only one layer, at least currently
+	offsetting_flags = BLOCKS_PLANE_OFFSETTING
+	// We mark as multiz_scaled FALSE so transforms don't effect us, and we draw to the planes below us as if they were us.
+	// This is safe because we will ALWAYS be on the top z layer, so it DON'T MATTER
+	multiz_scaled = FALSE
+
 /atom/movable/screen/plane_master/clickcatcher
 	name = "Click Catcher"
 	documentation = "Contains the screen object we use as a backdrop to catch clicks on portions of the screen that would otherwise contain nothing else. \
@@ -225,7 +240,18 @@
 	name = "Game"
 	documentation = "Holds most non floor/wall things. Anything on this plane \"wants\" to interlayer depending on position."
 	plane = GAME_PLANE
+	render_relay_planes = list(UV_LIGHTABLE_GAME_PLANE)
+
+/atom/movable/screen/plane_master/uv_lightable_game_plane
+	name = "UV Lightable Objects"
+	documentation = "Holds things that are essentially on the game plane but are only visible under UV light."
+	plane = UV_LIGHTABLE_GAME_PLANE
 	render_relay_planes = list(RENDER_PLANE_GAME_WORLD)
+
+
+/atom/movable/screen/plane_master/uv_lightable_game_plane/Initialize(mapload, datum/hud/hud_owner, datum/plane_master_group/home, offset)
+	. = ..()
+	add_filter("uv_handled_space", 2, alpha_mask_filter(render_source = OFFSET_RENDER_TARGET(UV_LIGHT_MASK_RENDER_TARGET, offset)))
 
 /atom/movable/screen/plane_master/game_world_above
 	name = "Upper Game"

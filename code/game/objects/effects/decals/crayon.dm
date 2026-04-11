@@ -11,6 +11,7 @@
 	var/paint_colour = COLOR_WHITE
 	///Used by `create_outline` to determine how strong (how wide) the outline itself will be.
 	var/color_strength
+	///Is made from UV paint, only visible in UV light
 
 /obj/effect/decal/cleanable/crayon/Initialize(mapload, main, type, e_name, graf_rot, alt_icon = null, desc_override = null, color_strength)
 	. = ..()
@@ -38,7 +39,16 @@
 		paint_colour = main
 	src.color_strength = color_strength
 	add_atom_colour(paint_colour, FIXED_COLOUR_PRIORITY)
+	if(uv_paint)
+
+
 	RegisterSignal(src, COMSIG_OBJ_PAINTED, PROC_REF(on_painted))
+
+/obj/effect/decal/cleanable/crayon/update_overlays()
+	. = ..()
+	var/mutable_appearance/emissive_overlay = emissive_appearance(icon, icon_state, src)
+	emissive_overlay.transform = transform
+	. += emissive_overlay
 
 /obj/effect/decal/cleanable/crayon/NeverShouldHaveComeHere(turf/here_turf)
 	return isgroundlessturf(here_turf)

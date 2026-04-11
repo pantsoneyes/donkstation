@@ -88,6 +88,9 @@
 	/// Whether to play a sound after using
 	var/post_noise = FALSE
 
+	/// Whether the paint is visible without a spy light
+	var/visible_without_light = FALSE
+
 	/**
 	 * List of selectable graffiti options
 	 * If an associated value is present, the graffiti has its own cost
@@ -566,6 +569,9 @@
 			created_art.AddElement(/datum/element/art, GOOD_ART)
 		else
 			created_art.AddElement(/datum/element/art, BAD_ART)
+
+		if(!visible_without_light)
+			created_art.plane = UV_LIGHTABLE_GAME_PLANE
 
 	if(!instant)
 		to_chat(user, span_notice("You finish drawing \the [temp]."))

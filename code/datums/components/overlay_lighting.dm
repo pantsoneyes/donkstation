@@ -52,6 +52,8 @@
 
 	///Overlay effect to cut into the darkness and provide light.
 	var/image/visible_mask
+	///Overlay effect to use for UV light
+	var/image/uv_visible_mask
 	///Lazy list to track the turfs being affected by our light, to determine their visibility.
 	var/list/turf/affected_turfs
 	///Movable atom currently holding the light. Parent might be a flashlight, for example, but that might be held by a mob or something else.
@@ -64,6 +66,8 @@
 	var/beam = FALSE
 	///A cone overlay for directional light, its alpha and color are dependent on the light
 	var/image/cone
+	///A cone overlay for directional UV light, its alpha and color are dependent on the light
+	var/image/uv_cone
 	///Current tracked direction for the directional cast behaviour
 	var/current_direction
 	///Tracks current directional x offset so we don't update unnecessarily
@@ -72,6 +76,8 @@
 	var/directional_offset_y
 	///Cast range for the directional cast (how far away the atom is moved)
 	var/cast_range = 2
+	///Is this a UV light? If so, we need to also create a separate mask for that.
+	var/uv_light = TRUE
 
 /datum/component/overlay_lighting/Initialize(_range, _power, _color, starts_on, is_directional, is_beam, force)
 	if(!ismovable(parent))
@@ -98,6 +104,24 @@
 		cone.blend_mode = BLEND_ADD
 		cone.transform = cone.transform.Translate(-32, -32)
 		set_direction(movable_parent.dir)
+
+	if(uv_light)
+		uv_visible_mask = image('icons/effects/light_overlays/light_32.dmi', icon_state = "light")
+		SET_PLANE_EXPLICIT(uv_visible_mask, UV_LIGHT_MASK_PLANE, movable_parent)
+		uv_visible_mask.appearance_flags = RESET_COLOR | RESET_ALPHA | RESET_TRANSFORM
+		uv_visible_mask.alpha = 0
+		uv_visible_mask.blend_mode = BLEND_ADD
+		if(is_directional)
+			directional = TRUE
+			uv_cone = image('icons/effects/light_overlays/light_cone.dmi', icon_state = "light")
+			SET_PLANE_EXPLICIT(uv_cone, UV_LIGHT_MASK_PLANE, movable_parent)
+			uv_cone.appearance_flags = RESET_COLOR | RESET_ALPHA | RESET_TRANSFORM
+			uv_cone.alpha = 110
+			uv_cone.blend_mode = BLEND_ADD
+			uv_cone.transform = uv_cone.transform.Translate(-32, -32)
+			set_direction(movable_parent.dir)
+
+
 	if(is_beam)
 		beam = TRUE
 	if(!isnull(_range))
@@ -163,7 +187,9 @@
 	set_holder(null)
 	clean_old_turfs()
 	visible_mask = null
+	uv_visible_mask = null
 	cone = null
+	uv_cone = null
 	parent_attached_to = null
 	return ..()
 
@@ -201,17 +227,21 @@
 /datum/component/overlay_lighting/proc/add_dynamic_lumi()
 	LAZYSET(current_holder.affected_dynamic_lights, src, lumcount_range + 1)
 	current_holder.underlays += visible_mask
+	current_holder.underlays += uv_visible_mask
 	current_holder.update_dynamic_luminosity()
 	if(directional)
 		current_holder.underlays += cone
+		current_holder.underlays += uv_cone
 
 ///Removes the luminosity and source for the affected movable atoms to keep track of their visibility.
 /datum/component/overlay_lighting/proc/remove_dynamic_lumi()
 	LAZYREMOVE(current_holder.affected_dynamic_lights, src)
 	current_holder.underlays -= visible_mask
+	current_holder.underlays -= uv_visible_mask
 	current_holder.update_dynamic_luminosity()
 	if(directional)
 		current_holder.underlays -= cone
+		current_holder.underlays -= uv_cone
 
 ///Called to change the value of parent_attached_to.
 /datum/component/overlay_lighting/proc/set_parent_attached_to(atom/movable/new_parent_attached_to)
@@ -323,13 +353,22 @@
 	SIGNAL_HANDLER
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays -= visible_mask
+		current_holder.underlays -= uv_visible_mask
 		current_holder.underlays -= cone
+		current_holder.underlays -= uv_cone
 	SET_PLANE_EXPLICIT(visible_mask, O_LIGHTING_VISUAL_PLANE, source)
+	if(uv_light)
+		SET_PLANE_EXPLICIT(uv_visible_mask, UV_LIGHT_MASK_PLANE, source)
 	if(cone)
 		SET_PLANE_EXPLICIT(cone, O_LIGHTING_VISUAL_PLANE, source)
+	if(uv_cone)
+		SET_PLANE_EXPLICIT(uv_cone, UV_LIGHT_MASK_PLANE, source)
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
+		current_holder.underlays += uv_visible_mask
 		current_holder.underlays += cone
+		current_holder.underlays += uv_cone
+
 
 ///Called when the current_holder is qdeleted, to remove the light effect.
 /datum/component/overlay_lighting/proc/on_parent_attached_to_qdel(atom/movable/source, force)
@@ -366,18 +405,23 @@
 	lumcount_range = CEILING(range, 1)
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays -= visible_mask
+		current_holder.underlays -= uv_visible_mask
 	visible_mask.icon = light_overlays["[pixel_bounds]"]
+	uv_visible_mask.icon = light_overlays["[pixel_bounds]"]
 	if(pixel_bounds == 32)
 		if(!directional) // it's important that we make it to the end of this function if we are a directional light
 			visible_mask.transform = null
+			uv_visible_mask.transform = null
 			return
 	else
 		var/offset = (pixel_bounds - 32) * 0.5
 		var/matrix/transform = new
 		transform.Translate(-offset, -offset)
 		visible_mask.transform = transform
+		uv_visible_mask.transform = transform
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
+		current_holder.underlays += uv_visible_mask
 	if(directional)
 		if(beam)
 			cast_range = max(round(new_range * 0.5), 1)
@@ -395,18 +439,28 @@
 	set_alpha = min(230, (abs(new_power) * 120) + 30)
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays -= visible_mask
+		current_holder.underlays -= uv_visible_mask
 	visible_mask.alpha = set_alpha
+	uv_visible_mask.alpha = set_alpha
 	visible_mask.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
+	uv_visible_mask.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
+		current_holder.underlays += uv_visible_mask
 	if(!directional)
 		return
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays -= cone
+		current_holder.underlays -= uv_cone
 	cone.alpha = min(120, (abs(new_power) * 60) + 15)
+	uv_cone.alpha = cone.alpha
 	cone.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
+	uv_cone.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
+
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += cone
+		current_holder.underlays += uv_cone
+
 
 
 ///Changes the light's color, pretty straightforward.
@@ -415,16 +469,22 @@
 	var/new_color = source.light_color
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays -= visible_mask
+		current_holder.underlays -= uv_visible_mask
 	visible_mask.color = new_color
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
+		current_holder.underlays += uv_visible_mask
 	if(!directional)
 		return
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays -= cone
+		current_holder.underlays -= uv_cone
+
 	cone.color = new_color
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += cone
+		current_holder.underlays += uv_cone
+
 
 
 ///Toggles the light on and off.
@@ -505,6 +565,8 @@
 		scanning = next_turf
 
 	current_holder.underlays -= visible_mask
+	current_holder.underlays -= uv_visible_mask
+
 
 	var/translate_x = -((range - 1) * 32)
 	var/translate_y = translate_x
@@ -536,8 +598,10 @@
 			transform.Scale(scale_x, scale_y)
 		transform.Translate(translate_x, translate_y)
 		visible_mask.transform = transform
+		uv_visible_mask.transform = transform
 	if(overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
+		current_holder.underlays += uv_visible_mask
 
 ///Called when current_holder changes loc.
 /datum/component/overlay_lighting/proc/on_holder_dir_change(atom/movable/source, olddir, newdir)
