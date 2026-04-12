@@ -397,7 +397,6 @@
 	name = "Emissive UV"
 	documentation = "Same as the emissive but only with things that are on the UV spectrum"
 	plane = EMISSIVE_UV_PLANE
-	//render_target = EMISSIVE_UV_RENDER_TARGET
 	render_relay_planes = list(RENDER_PLANE_COMBINED_EMISSIVE)
 	blend_mode_override = BLEND_ADD
 
