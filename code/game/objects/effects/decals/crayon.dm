@@ -46,6 +46,12 @@
 		update_icon()
 
 	RegisterSignal(src, COMSIG_OBJ_PAINTED, PROC_REF(on_painted))
+
+/obj/effect/decal/cleanable/crayon/update_overlays()
+	. = ..()
+	. += emissive_appearance(icon, icon_state, src, alpha = src.alpha, assigned_plane = EMISSIVE_UV_PLANE)
+
+
 /obj/effect/decal/cleanable/crayon/NeverShouldHaveComeHere(turf/here_turf)
 	return isgroundlessturf(here_turf)
 

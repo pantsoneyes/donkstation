@@ -1234,3 +1234,11 @@
 ///Pre-core activated one for admin spawning.
 /obj/item/flashlight/lamp/space_bubble/preactivated
 	installed_pyro_core = TRUE
+
+
+
+/obj/item/flashlight/uv
+	name = "UV flashlight"
+	desc = "A flashlight that emits ultraviolet light. Useful for seeing things that are otherwise invisible to the naked eye."
+	light_color = COLOR_VIOLET
+	light_flags = LIGHT_IS_UV

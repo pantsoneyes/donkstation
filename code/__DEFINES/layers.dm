@@ -27,9 +27,11 @@
 #define FLOOR_PLANE -7
 
 #define WALL_PLANE -6
-#define GAME_PLANE -5
+
 ///Objects on this plane are only visible with UV light.
-#define UV_LIGHTABLE_GAME_PLANE -4
+#define UV_LIGHTABLE_GAME_PLANE -5
+
+#define GAME_PLANE -4
 
 #define ABOVE_GAME_PLANE -3
 ///Slightly above the game plane but does not catch mouse clicks. Useful for certain visuals that should be clicked through, like seethrough trees
@@ -47,18 +49,26 @@
 
 //---------- LIGHTING -------------
 /// Normal 1 per turf dynamic lighting underlays
-#define LIGHTING_PLANE 10
+#define LIGHTING_PLANE 9
 
 /// Lighting objects that are "free floating"
-#define O_LIGHTING_VISUAL_PLANE 11
+#define O_LIGHTING_VISUAL_PLANE 10
 #define O_LIGHTING_VISUAL_RENDER_TARGET "*O_LIGHT_VISUAL_PLANE"
 
 // Render plate used by overlay lighting to mask turf lights
-#define RENDER_PLANE_TURF_LIGHTING 12
+#define RENDER_PLANE_TURF_LIGHTING 11
+
+#define EMISSIVE_UV_PLANE 12
+#define EMISSIVE_UV_RENDER_TARGET "*EMISSIVE_UV_RENDER_TARGET"
 
 #define EMISSIVE_PLANE 13
+
+/// This plane has all icons that want to be emmisve before they are masked
+#define RENDER_PLANE_COMBINED_EMISSIVE 14
+
 /// This plane masks out lighting to create an "emissive" effect, ie for glowing lights in otherwise dark areas.
-#define RENDER_PLANE_EMISSIVE 14
+#define RENDER_PLANE_EMISSIVE 15
+
 #define EMISSIVE_RENDER_TARGET "*RENDER_PLANE_EMISSIVE"
 // Ensures all the render targets that point at the emissive plate layer correctly
 #define EMISSIVE_Z_BELOW_LAYER 1
@@ -66,47 +76,47 @@
 #define EMISSIVE_SPACE_LAYER 3
 #define EMISSIVE_WALL_LAYER 4
 
-#define RENDER_PLANE_EMISSIVE_BLOOM_MASK 15
+#define RENDER_PLANE_EMISSIVE_BLOOM_MASK 16
 #define EMISSIVE_BLOOM_MASK_RENDER_TARGET "*RENDER_PLANE_EMISSIVE_BLOOM_MASK"
-#define RENDER_PLANE_EMISSIVE_BLOOM 16
+#define RENDER_PLANE_EMISSIVE_BLOOM 17
 
-#define RENDER_PLANE_SPECULAR_MASK 17
+#define RENDER_PLANE_SPECULAR_MASK 18
 #define SPECULAR_MASK_RENDER_TARGET "*RENDER_PLANE_SPECULAR_MASK"
 
 //-------------------- Lighting ---------------------
 
 /// Main game plane to which everything renders, which then is multiplied by light
 /// Should not be lit directly as it is sourced for emissive bloom
-#define RENDER_PLANE_UNLIT_GAME 19
+#define RENDER_PLANE_UNLIT_GAME 20
 
-#define RENDER_PLANE_LIGHTING 20
+#define RENDER_PLANE_LIGHTING 21
 
 /// Masks the lighting plane with turfs, so we never light up the void
 /// Failing that, masks emissives and the overlay lighting plane
-#define RENDER_PLANE_LIGHT_MASK 21
+#define RENDER_PLANE_LIGHT_MASK 22
 #define LIGHT_MASK_RENDER_TARGET "*RENDER_PLANE_LIGHT_MASK"
 
 /// We cannot render speculars to ABOVE_LIGHTING, as then they give it alpha and end up masking things in darkness
 /// So we need to render it directly to RENDER_PLANE_GAME above RENDER_PLANE_LIGHTING
-#define RENDER_PLANE_SPECULAR 22
+#define RENDER_PLANE_SPECULAR 23
 
 /// Things that should render ignoring lighting
-#define ABOVE_LIGHTING_PLANE 23
+#define ABOVE_LIGHTING_PLANE 24
 
-#define WEATHER_GLOW_PLANE 24
+#define WEATHER_GLOW_PLANE 25
 
 ///---------------- MISC -----------------------
 
 ///Pipecrawling images
-#define PIPECRAWL_IMAGES_PLANE 25
+#define PIPECRAWL_IMAGES_PLANE 26
 
 ///AI Camera Static
-#define CAMERA_STATIC_PLANE 26
+#define CAMERA_STATIC_PLANE 27
 
 ///Anything that wants to be part of the game plane, but also wants to draw above literally everything else
-#define HIGH_GAME_PLANE 27
+#define HIGH_GAME_PLANE 28
 
-#define FULLSCREEN_PLANE 28
+#define FULLSCREEN_PLANE 29
 
 ///--------------- FULLSCREEN RUNECHAT BUBBLES ------------
 

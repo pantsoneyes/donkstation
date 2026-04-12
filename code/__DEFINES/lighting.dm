@@ -17,6 +17,8 @@
 #define LIGHT_FROZEN (1<<1)
 /// Does this light ignore inherent offsets? (Pixels, transforms, etc)
 #define LIGHT_IGNORE_OFFSET (1<<2)
+/// Is this light on the UV spectrum, and thus illuminates UV-sensitive objects?
+#define LIGHT_IS_UV (1<<3)
 
 #define MINIMUM_USEFUL_LIGHT_RANGE 1.4
 

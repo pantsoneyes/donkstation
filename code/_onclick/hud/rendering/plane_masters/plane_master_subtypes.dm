@@ -252,7 +252,7 @@
 /atom/movable/screen/plane_master/uv_lightable_game_plane/Initialize(mapload, datum/hud/hud_owner, datum/plane_master_group/home, offset)
 	. = ..()
 	add_filter("uv_handled_space", 2, alpha_mask_filter(render_source = OFFSET_RENDER_TARGET(UV_LIGHT_MASK_RENDER_TARGET, offset)))
-	add_filter("uv_handled_bloom", 3, bloom_filter(threshold = COLOR_BLACK, size = 2, offset = 0.5))
+	//add_filter("uv_handled_bloom", 3, bloom_filter(threshold = COLOR_BLACK, size = 0.1, offset = 0.1))
 
 /atom/movable/screen/plane_master/game_world_above
 	name = "Upper Game"
@@ -389,20 +389,21 @@
 	plane = EMISSIVE_PLANE
 	appearance_flags = PLANE_MASTER|NO_CLIENT_COLOR
 	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
-	render_relay_planes = list()
+	render_relay_planes = list(RENDER_PLANE_COMBINED_EMISSIVE)
 	critical = PLANE_CRITICAL_DISPLAY
+	blend_mode_override = BLEND_ADD
 
-/atom/movable/screen/plane_master/emissive/Initialize(mapload, datum/hud/hud_owner, datum/plane_master_group/home, offset)
+/atom/movable/screen/plane_master/emissive/uv_emissive
+	name = "Emissive UV"
+	documentation = "Same as the emissive but only with things that are on the UV spectrum"
+	plane = EMISSIVE_UV_PLANE
+	//render_target = EMISSIVE_UV_RENDER_TARGET
+	render_relay_planes = list(RENDER_PLANE_COMBINED_EMISSIVE)
+	blend_mode_override = BLEND_ADD
+
+/atom/movable/screen/plane_master/emissive/uv_emissive/Initialize(mapload, datum/hud/hud_owner, datum/plane_master_group/home, offset)
 	. = ..()
-	/// Okay, so what we're doing here is making all emissives convert to white for actual emissive masking (i.e. adding light so objects glow)
-	add_relay_to(GET_NEW_PLANE(RENDER_PLANE_EMISSIVE, offset), relay_color = list(1,1,1,0, 1,1,1,0, 0,0,0,0, 0,0,0,1, 0,0,0,0))
-	/// But for the bloom plate we convert only the red color into full white, this way we can have emissives in green channel unaffected by bloom
-	/// which allows us to selectively bloom only a part of our emissives
-	add_relay_to(GET_NEW_PLANE(RENDER_PLANE_EMISSIVE_BLOOM, offset), relay_color = list(255,255,255,0, 0,0,0,0, 0,0,0,0, 0,0,0,1, 0,0,0,0))
-	add_relay_to(GET_NEW_PLANE(RENDER_PLANE_EMISSIVE_BLOOM_MASK, offset), relay_color = list(1,1,1,1, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0))
-	// Blue channel is dedicated to specular, i.e. our bootleg implementation of shiny objects
-	// We map it onto alpha so we can use the mask plate in an alpha mask filter to cut out only the shiny bits
-	add_relay_to(GET_NEW_PLANE(RENDER_PLANE_SPECULAR_MASK, offset), relay_color = list(0,0,0,0, 0,0,0,0, 0,0,0,1, 0,0,0,0, 1,1,1,0))
+	add_filter("uv_handled_space", 2, alpha_mask_filter(render_source = OFFSET_RENDER_TARGET(UV_LIGHT_MASK_RENDER_TARGET, offset)))
 
 /atom/movable/screen/plane_master/pipecrawl
 	name = "Pipecrawl"

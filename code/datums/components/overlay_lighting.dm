@@ -2,6 +2,8 @@
 #define LIGHTING_ON (1<<0)
 ///Is the parent attached to something else, its loc? Then we need to keep an eye of this.
 #define LIGHTING_ATTACHED (1<<1)
+///Is the light UV, and thus able to make uv-specific things visible?
+#define LIGHTING_UV (1<<2)
 
 #define GET_PARENT (parent_attached_to || parent)
 
@@ -77,7 +79,7 @@
 	///Cast range for the directional cast (how far away the atom is moved)
 	var/cast_range = 2
 	///Is this a UV light? If so, we need to also create a separate mask for that.
-	var/uv_light = TRUE
+	var/uv_light = FALSE
 
 /datum/component/overlay_lighting/Initialize(_range, _power, _color, starts_on, is_directional, is_beam, force)
 	if(!ismovable(parent))
@@ -104,6 +106,8 @@
 		cone.blend_mode = BLEND_ADD
 		cone.transform = cone.transform.Translate(-32, -32)
 		set_direction(movable_parent.dir)
+
+	uv_light = movable_parent.light_flags & LIGHT_IS_UV
 
 	if(uv_light)
 		uv_visible_mask = image('icons/effects/light_overlays/light_32.dmi', icon_state = "light")
@@ -407,18 +411,21 @@
 		current_holder.underlays -= visible_mask
 		current_holder.underlays -= uv_visible_mask
 	visible_mask.icon = light_overlays["[pixel_bounds]"]
-	uv_visible_mask.icon = light_overlays["[pixel_bounds]"]
+	if(uv_visible_mask)
+		uv_visible_mask.icon = light_overlays["[pixel_bounds]"]
 	if(pixel_bounds == 32)
 		if(!directional) // it's important that we make it to the end of this function if we are a directional light
 			visible_mask.transform = null
-			uv_visible_mask.transform = null
+			if(uv_visible_mask)
+				uv_visible_mask.transform = null
 			return
 	else
 		var/offset = (pixel_bounds - 32) * 0.5
 		var/matrix/transform = new
 		transform.Translate(-offset, -offset)
 		visible_mask.transform = transform
-		uv_visible_mask.transform = transform
+		if(uv_visible_mask)
+			uv_visible_mask.transform = transform
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
 		current_holder.underlays += uv_visible_mask
@@ -439,11 +446,14 @@
 	set_alpha = min(230, (abs(new_power) * 120) + 30)
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays -= visible_mask
-		current_holder.underlays -= uv_visible_mask
+		if(uv_visible_mask)
+			current_holder.underlays -= uv_visible_mask
 	visible_mask.alpha = set_alpha
-	uv_visible_mask.alpha = set_alpha
+	if(uv_visible_mask)
+		uv_visible_mask.alpha = set_alpha
 	visible_mask.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
-	uv_visible_mask.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
+	if(uv_visible_mask)
+		uv_visible_mask.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
 		current_holder.underlays += uv_visible_mask
@@ -453,9 +463,11 @@
 		current_holder.underlays -= cone
 		current_holder.underlays -= uv_cone
 	cone.alpha = min(120, (abs(new_power) * 60) + 15)
-	uv_cone.alpha = cone.alpha
+	if(uv_cone)
+		uv_cone.alpha = cone.alpha
 	cone.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
-	uv_cone.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
+	if(uv_cone)
+		uv_cone.blend_mode = new_power > 0 ? BLEND_ADD : BLEND_SUBTRACT
 
 	if(current_holder && overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += cone
