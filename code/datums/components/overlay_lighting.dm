@@ -610,7 +610,8 @@
 			transform.Scale(scale_x, scale_y)
 		transform.Translate(translate_x, translate_y)
 		visible_mask.transform = transform
-		uv_visible_mask.transform = transform
+		if(uv_visible_mask)
+			uv_visible_mask.transform = transform
 	if(overlay_lighting_flags & LIGHTING_ON)
 		current_holder.underlays += visible_mask
 		current_holder.underlays += uv_visible_mask
