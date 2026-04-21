@@ -1491,6 +1491,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 /// This atom has a tether attached to it
 #define TRAIT_TETHER_ATTACHED "tether_attached"
 
+/// This atom has a chain attached to it (from /datum/component/chain)
+#define TRAIT_CHAINED "chained"
+
 /**
  *
  * This trait is used in some interactions very high in the interaction chain to allow

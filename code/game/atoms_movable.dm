@@ -36,8 +36,9 @@
 	var/inertia_moving = FALSE
 	///Multiplier for inertia based movement in space
 	var/inertia_move_multiplier = 1
-	///Object "weight", higher weight reduces acceleration applied to the object
-	var/inertia_force_weight = 1
+	/// Physical mass of the object in abstract units. Higher mass reduces space-inertia acceleration and shortens throw range.
+	/// Equivalent to the old inertia_force_weight: mass/MASS_DEFAULT replaces inertia_force_weight in all calculations.
+	var/mass = MASS_DEFAULT
 	///The last time we pushed off something
 	///This is a hack to get around dumb him him me scenarios
 	var/last_pushoff
@@ -1377,6 +1378,10 @@
 					return//no throw speed, the user was moving too fast.
 
 	. = TRUE // No failure conditions past this point.
+
+	// Heavier objects travel a shorter range when thrown. mass/MASS_DEFAULT > 1 means heavier than default.
+	if(mass != MASS_DEFAULT)
+		range = max(1, round(range * (MASS_DEFAULT / max(mass, 1))))
 
 	var/target_zone
 	if(QDELETED(thrower))

@@ -88,8 +88,8 @@
 
 	var/applied_force = additional_force
 
-	var/force_x = sin(drifting_loop.angle) * drift_force + sin(inertia_angle) * applied_force / parent.inertia_force_weight
-	var/force_y = cos(drifting_loop.angle) * drift_force + cos(inertia_angle) * applied_force / parent.inertia_force_weight
+	var/force_x = sin(drifting_loop.angle) * drift_force + sin(inertia_angle) * applied_force / (parent.mass / MASS_DEFAULT)
+	var/force_y = cos(drifting_loop.angle) * drift_force + cos(inertia_angle) * applied_force / (parent.mass / MASS_DEFAULT)
 
 	drift_force = clamp(sqrt(force_x * force_x + force_y * force_y), 0, !isnull(controlled_cap) ? controlled_cap : INERTIA_FORCE_CAP)
 	if(drift_force < 0.1) // Rounding issues
@@ -220,11 +220,11 @@
 			if ((source_user.client.intended_direction & movement_dir) && !(get_dir(source_user, backup) & movement_dir))
 				return FALSE
 
-	if (drift_force <= INERTIA_FORCE_SPACEMOVE_REDUCTION / parent.inertia_force_weight)
+	if (drift_force <= INERTIA_FORCE_SPACEMOVE_REDUCTION / (parent.mass / MASS_DEFAULT))
 		glide_to_halt(get_loop_delay(parent))
 		return TRUE
 
-	drift_force -= INERTIA_FORCE_SPACEMOVE_REDUCTION / parent.inertia_force_weight
+	drift_force -= INERTIA_FORCE_SPACEMOVE_REDUCTION / (parent.mass / MASS_DEFAULT)
 	drifting_loop.set_delay(get_loop_delay(parent))
 	return TRUE
 

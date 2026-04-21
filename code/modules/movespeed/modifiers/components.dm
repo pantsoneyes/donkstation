@@ -23,3 +23,9 @@
 
 /datum/movespeed_modifier/sanity/disturbed
 	multiplicative_slowdown = 0.25
+
+/datum/movespeed_modifier/chained
+	variable = TRUE
+	id = "chained"
+	movetypes = GROUND
+	multiplicative_slowdown = 0

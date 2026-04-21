@@ -129,6 +129,14 @@
 ///From /datum/component/aquarium/get_content_beauty: (beauty_holder)
 #define COMSIG_MOVABLE_GET_AQUARIUM_BEAUTY "movable_ge_aquarium_beauty"
 
+// --- Chain signals ---
+///fired on both chain ends when the chain becomes fully taut: (datum/component/chain)
+#define COMSIG_MOVABLE_CHAIN_TAUT "movable_chain_taut"
+///fired on both chain ends when a chain snaps/breaks: (datum/component/chain)
+#define COMSIG_MOVABLE_CHAIN_SNAPPED "movable_chain_snapped"
+///fired on the thrown movable after it is bounced back by a taut chain: (datum/thrownthing/original_throw)
+#define COMSIG_MOVABLE_CHAIN_WHIPLASH "movable_chain_whiplash"
+
 /// Sent to movables when they are being stolen by a spy: (mob/living/spy, datum/spy_bounty/bounty)
 #define COMSIG_MOVABLE_SPY_STEALING "movable_spy_stealing"
 /// Called when something is pushed by a living mob bumping it: (mob/living/pusher, push force)
