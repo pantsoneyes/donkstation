@@ -123,6 +123,7 @@
 #include "cargo_dep_order_locations.dm"
 #include "cargo_selling.dm"
 #include "chain_pull_through_space.dm"
+#include "chain_tests.dm"
 #include "changeling.dm"
 #include "chat_filter.dm"
 #include "circuit_component_category.dm"

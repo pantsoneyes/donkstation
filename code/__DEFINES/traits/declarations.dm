@@ -666,6 +666,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_UNHITTABLE_BY_PROJECTILES "unhittable_by_projectiles"
 /// Mobs with this trait can never be hit by laser projectiles, meaning the projectiles will just go through.
 #define TRAIT_UNHITTABLE_BY_LASERS "unhittable_by_lasers"
+/// Atom physically blocks a door from closing (e.g. a chain running through the doorway).
+/// Used in airlock/close() as an alternative to density so non-dense objects can jam doors.
+#define TRAIT_BLOCKS_DOOR_CLOSE "blocks_door_close"
 
 /// Mobs with this trait do care about a few grisly things, such as digging up graves. They also really do not like bringing people back to life or tending wounds, but love autopsies and amputations.
 #define TRAIT_MORBID "morbid"

@@ -1413,7 +1413,7 @@
 	if(!dangerous_close)
 		for(var/turf/checked_turf in locs)
 			for(var/atom/movable/blocking in checked_turf)
-				if(blocking.density && blocking != src)
+				if((blocking.density || HAS_TRAIT(blocking, TRAIT_BLOCKS_DOOR_CLOSE)) && blocking != src)
 					autoclose_in(DOOR_CLOSE_WAIT)
 					return FALSE
 
